@@ -1,0 +1,164 @@
+﻿<form class="form col-md-6 contact-form" id="addressAddForm" name="addressCtrl.addressAddForm" role="form" novalidate>
+    <fieldset>
+        <p>Add Street Data</p><br />
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="StreetAddress" style="color:black"><h5>Enter Street Address</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressAddForm.Line1.$dirty && addressCtrl.addressAddForm.Line1.$invalid">
+                <span ng-show="addressCtrl.addressAddForm.Line1.$error.required">Address is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <input id="Line1" name="Line1" type="text" ng-model="addressCtrl.addStreetData.Line1" class="form-control" placeholder="Please enter a valid Street Address" required>
+            </div>
+        </div>
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="City" style="color:black"><h5>Enter City</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressAddForm.City.$dirty && addressCtrl.addressAddForm.City.$invalid">
+                <span ng-show="addressCtrl.addressAddForm.City.$error.required">City is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <input id="City" name="City" type="text" ng-model="addressCtrl.addStreetData.City" class="form-control" placeholder="Please enter a valid City" required>
+            </div>
+        </div>
+
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="state" style="color:black"><h5>Choose State</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressAddForm.State.$dirty && addressCtrl.addressAddForm.State.$invalid">
+                <span ng-show="addressCtrl.addressAddForm.State.$error.required">State is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <select class="form-control"
+                        placeholder="state"
+                        id="state"
+                        name="state"
+                        ng-model="addressCtrl.addStreetData.State"
+                        required>
+                    <option value="CA">California</option>
+
+                </select>
+            </div>
+        </div>
+
+
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="Zipcode" style="color:black"><h5>Enter ZipCode</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressAddForm.ZipCode.$dirty && addressCtrl.addressAddForm.ZipCode.$invalid">
+                <span ng-show="addressCtrl.addressAddForm.ZipCode.$error.required">Zip Code is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <input id="ZipCode" name="ZipCode" type="text" ng-model="addressCtrl.addStreetData.ZipCode" placeholder="Please enter a valid Zip Code" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="StreetHourStart" style="color:black"><h5>Street Sweeping Hours Start</h5></label>
+
+            <div class="col-md-12 input-group-sm">
+                <select class="form-control"
+                        placeholder="StreetHourStart"
+                        id="StreetHourStart"
+                        name="StreetHourStart"
+                        ng-model="addressCtrl.addStreetData.StreetHourStart">
+                    <option value="6am">6am</option>
+                    <option value="7am">7am</option>
+                    <option value="8am">8am</option>
+                    <option value="9am">9am</option>
+                    <option value="10am">10am</option>
+                    <option value="11am">11am</option>
+                    <option value="12pm">12pm</option>
+                    <option value="1pm">1pm</option>
+                    <option value="2pm">2pm</option>
+                    <option value="3pm">3pm</option>
+                    <option value="4pm">4pm</option>
+                    <option value="5pm">5pm</option>
+                    <option value="6pm">6pm</option>
+                    <option value="7pm">7pm</option>
+                    <option value="8pm">8pm</option>
+                    <option value="9pm">9pm</option>
+                    <option value="10pm">10pm</option>
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group rentMgnBtmSm">
+            <label for="StreetHourEnd" style="color:black"><h5>Street Sweeping Hours Ends</h5></label>
+
+            <div class="col-md-12 input-group-sm">
+                <select class="form-control"
+                        placeholder="StreetHourEnd"
+                        id="StreetHourEnd"
+                        name="StreetHourEnd"
+                        ng-model="addressCtrl.addStreetData.StreetHourEnd">
+                    <option value="6am">6am</option>
+                    <option value="7am">7am</option>
+                    <option value="8am">8am</option>
+                    <option value="9am">9am</option>
+                    <option value="10am">10am</option>
+                    <option value="11am">11am</option>
+                    <option value="12pm">12pm</option>
+                    <option value="1pm">1pm</option>
+                    <option value="2pm">2pm</option>
+                    <option value="3pm">3pm</option>
+                    <option value="4pm">4pm</option>
+                    <option value="5pm">5pm</option>
+                    <option value="6pm">6pm</option>
+                    <option value="7pm">7pm</option>
+                    <option value="8pm">8pm</option>
+                    <option value="9pm">9pm</option>
+                    <option value="10pm">10pm</option>
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group rentMgnBtmSm">
+            <label for="DayOfWeek" style="color:black"><h5>What day is Street Sweeping</h5></label>
+
+            <div class="col-md-12 input-group-sm">
+                <select class="form-control"
+                        placeholder="DayOfWeek"
+                        id="DayOfWeek"
+                        name="DayOfWeek"
+                        ng-model="addressCtrl.addStreetData.DayOfWeek">
+                    <option value="1">Monday</option>
+                    <option value="2">Tuesday</option>
+                    <option value="3">Wednesday</option>
+                    <option value="4">Thursday</option>
+                    <option value="5">Friday</option>
+                    <option value="6">Saturday</option>
+                    <option value="7">Sunday</option>
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group rentMgnBtmSm">
+            <label for="TimeLimit" style="color:black"><h5>Parking Time Limit</h5></label>
+
+            <div class="col-md-12 input-group-sm">
+                <select class="form-control"
+                        placeholder="TimeLimit"
+                        id="TimeLimit"
+                        name="TimeLimit"
+                        ng-model="addressCtrl.addStreetData.TimeLimit">
+                    <option value="None">None</option>
+                    <option value="30 Mins">30 Mins</option>
+                    <option value="1 Hour">1 Hour</option>
+                    <option value="2 Hours">2 Hours</option>
+                    <option value="3 Hours">3 Hours</option>
+                    <option value="4 Hours">4 Hours</option>
+                    <option value="5 Hours">5 Hours</option>
+                    <option value="6 Hours">6 Hours</option>
+
+                </select>
+            </div>
+        </div>
+        <br />
+        <p>
+            <div class="col-md-12 rentMgnBtmSm">
+                <button class="btn btn-primary col-sm-offset-5" style="width: 120px" data-ng-click="addressCtrl.submitStreetData()" ng-disabled="addressCtrl.addressAddForm.$invalid" type="submit">Submit</button>
+            </div>
+        </p>
+    </fieldset>
+</form>

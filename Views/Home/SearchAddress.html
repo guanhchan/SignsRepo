@@ -1,0 +1,62 @@
+﻿<form class="form col-md-6 contact-form" id="addressForm" name="addressCtrl.addressForm" role="form" novalidate>
+    <fieldset>
+        <p>Fill in your street addreess, city and zipcode.</p><br />
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="StreetAddress" style="color:black"><h5>Enter Street Address</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressForm.Line1.$dirty && addressCtrl.addressForm.Line1.$invalid">
+                <span ng-show="addressCtrl.addressForm.Line1.$error.required">Address is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <input id="Line1" name="Line1" type="text" ng-model="addressCtrl.signSearch.Line1" class="form-control" placeholder="Please enter a valid Street Address" required>
+            </div>
+        </div>
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="City" style="color:black"><h5>Enter City</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressForm.City.$dirty && addressCtrl.addressForm.City.$invalid">
+                <span ng-show="addressCtrl.addressForm.City.$error.required">City is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <input id="City" name="City" type="text" ng-model="addressCtrl.signSearch.City" class="form-control" placeholder="Please enter a valid City" required>
+            </div>
+        </div>
+
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="state" style="color:black"><h5>Choose State</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressForm.State.$dirty && addressCtrl.addressForm.State.$invalid">
+                <span ng-show="addressCtrl.addressForm.State.$error.required">State is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <select class="form-control"
+                        placeholder="state"
+                        id="state"
+                        name="state"
+                        ng-model="addressCtrl.signSearch.State"
+                        required>
+                    <option value="CA">California</option>
+
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group rentMgnBtmSm">
+
+            <label for="Zipcode" style="color:black"><h5>Enter ZipCode</h5></label>
+            <span style="color:red" ng-show="addressCtrl.addressForm.ZipCode.$dirty && addressCtrl.addressForm.ZipCode.$invalid">
+                <span ng-show="addressCtrl.addressForm.ZipCode.$error.required">Zip Code is required.</span>
+            </span>
+            <div class="col-md-12 input-group-sm">
+                <input id="ZipCode" name="ZipCode" type="text" ng-model="addressCtrl.signSearch.ZipCode" placeholder="Please enter a valid Zip Code" class="form-control" required>
+            </div>
+        </div>
+
+        <br />
+        <p>
+            <div class="col-md-12 rentMgnBtmSm">
+                <button class="btn btn-primary col-sm-offset-5" style="width: 120px" data-ng-click="addressCtrl.submitSearch()" ng-disabled="addressCtrl.addressForm.$invalid" type="submit">Submit</button>
+            </div>
+        </p>
+    </fieldset>
+</form>

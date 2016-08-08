@@ -1,0 +1,582 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+
+}
+<style>
+      .scrollable-content {
+            text-transform: uppercase;
+        }
+
+
+</style>
+
+
+<h1 class="pull-right"><strong><a href="/">GO HOME</a></strong></h1>
+
+<h2>Add/Edit/Delete</h2>
+
+
+<div ng-app="guanApp">
+    <div ng-controller="tabController as tabCtrl">
+
+        <div class="col-md-12 content-box-wrapper">
+      
+            <ul class="nav nav-tabs">
+                <li ng-class="tabCtrl.tabClass(tab)" ng-repeat="tab in tabCtrl.tabs">
+                    <a href="{{tab.link}}" ng-click="tabCtrl.setSelectedTab(tab)">{{tab.label}}</a>
+                </li>
+            </ul>
+            <div ng-view></div>
+        </div>
+
+        </div>
+    </div>
+
+        @section scripts{
+
+
+
+            <script src="~/Scripts/angular.js"></script>
+            <script src="~/Scripts/angular-route.js"></script>
+            <script src="~/Scripts/angular-animate.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAoOYqWsJH0YY8AkR6mD6Ce0Kjp0FBRXxg"></script>
+
+            <script type="text/javascript">
+                var guanApp = angular.module('guanApp', ['ngRoute'])
+
+                guanApp.factory('$baseController', ['$document', '$log', '$route', '$routeParams', '$systemEventService', '$alertService', function (
+      $document,
+      $log,
+      $route,
+      $routeParams,
+      $systemEventService,
+      $alertService
+
+
+      ) {
+
+
+
+
+
+                    var base = {
+                        $document: $document
+                        , $log: $log
+                        , merge: $.extend
+                        , mapData: $.map
+
+                        , $route: $route
+                        , $routeParams: $routeParams
+                        , $systemEventService: $systemEventService
+                        , $alertService
+                        , setUpCurrentRequest: function (viewModel) {
+
+                            viewModel.currentRequest = { originalPath: "/", isTop: true };
+
+                            if (viewModel.$route.current) {
+                                viewModel.currentRequest = viewModel.$route.current;
+                                viewModel.currentRequest.locals = {};
+                                viewModel.currentRequest.isTop = false;
+                            }
+
+                            viewModel.$log.log("setUpCurrentRequest firing:");
+                            viewModel.$log.debug(viewModel.currentRequest);
+                        }
+                        , showErrors: function (errorResponse) {
+                            for (var errorIndex in errorResponse.errors) {
+                                var msg = errorResponse.errors[errorIndex];
+                                $alertService['error'](msg, 'An error occurred');
+
+                            }
+                        }
+                    };
+
+                    base.getParentController = _getParentController;
+
+                    function _getParentController(controllerName) {
+
+                        var controller = null;
+
+                        if (this.$scope && this.$scope.$parent) {
+                            controller = this.$scope.$parent[controllerName];
+                        }
+
+                        return controller;
+
+                    }
+
+                    return base;
+
+
+                }]);
+
+                guanApp.config(function ($routeProvider, $locationProvider) {
+
+                    
+                    $routeProvider.when('/', {
+                        templateUrl: '/Home/Main',
+                        controller: 'addressController',
+                        controllerAs: 'addressCtrl'
+                    })
+                        .when('/list', {
+                            templateUrl: '/Home/Index',
+                            controller: 'addressListingController',
+                            controllerAs: 'addressListingCtrl'
+                        })
+                 
+
+                    $locationProvider.html5Mode(false);
+                });
+
+
+                guanApp.controller('addressEditController', ['$scope', '$baseController', function ($scope, $baseController) {
+
+                    var vm = this;
+
+                    render();
+
+                    function render() {
+
+
+
+                        _getById();
+                    }
+
+                    function _getById() {
+
+                        var url = "/api/addresses/" + currentId;
+
+                        var settings = {
+                            contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , dataType: "json"
+                            , success: onSuccess
+                            , error: onError
+                            , type: "GET"
+                        };
+
+                        $.ajax(url, settings);
+
+                    }
+
+                    function _editById(id) {
+                        var url = "/api/addresses/" + id;
+                    }
+
+
+
+                }]);
+
+
+                guanApp.controller('addressController', ['$scope', function ($scope) {
+
+                    var vm = this;
+
+                    vm.geocoder = null;
+                    vm.geocodeResponse = null;
+                    vm.isSubmitSearch = false;
+                    vm.isAddStreetData = false;
+                    vm.headingInfo = "Angular is still working";
+                    vm.streetData = {};
+                    vm.signSearch = {};
+                    vm.addStreetData = {};
+                    vm.allStreetData = {};
+                    vm.submitSearch = _submitSearch;
+                    vm.submitStreetData = _submitStreetData;
+                    vm.deleteSign = _deleteSign;
+                    vm.onAddSuccess = _onAddSuccess;
+                    vm.onAddError = _onAddError;
+
+                    vm.onSignSuccess = _onSignSuccess;
+                    vm.onSignError = _onSignError;
+
+                    vm.onGetAllSuccess = _onGetAllSuccess;
+                    vm.onGetAllError = _onGetAllError;
+
+                    vm.onDeleteSuccess = _onDeleteSuccess;
+                    vm.onDeleteError = _onDeleteError;
+
+
+
+                    render();
+
+                    function render() {
+                   
+
+
+                        vm.geocoder = new google.maps.Geocoder();
+
+
+                    }
+
+
+
+                    function _submitSearch() {
+                        vm.isSubmitSearch = true;
+                        console.log('touched');
+                        console.log(vm.signSearch)
+                        var address = (vm.signSearch.Line1 + " "
+                                + vm.signSearch.City + " "
+                                + vm.signSearch.State + " "
+                                + vm.signSearch.ZipCode);
+
+                        _geoCodeAddress(address, _onGeoCodeSuccess);
+
+                    }
+
+                    function _getAllStreetData() {
+
+                        var url = "/api/addresses";
+
+                        var settings = {
+                            cache: false
+                            , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , dataType: "json"
+                            , success: vm.onGetAllSuccess
+                            , error: vm.onGetAllError
+                            , type: "GET"
+                        };
+
+                        $.ajax(url, settings);
+
+                    }
+
+                    function _onGetAllSuccess(data) {
+                        console.log(data);
+                        $scope.$apply(vm.allStreetData = data.Items);
+
+                    }
+
+                    function _onGetAllError() {
+
+
+                    }
+
+                    function _deleteSign(id) {
+                        console.log(id);
+
+                        var url = "/api/addresses/" + id;
+
+                        var settings = {
+                            contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , dataType: "json"
+                            , success: vm.onDeleteSuccess
+                            , error: vm.onDeleteError
+                            , type: "DELETE"
+                        };
+
+                        $.ajax(url, settings);
+
+
+                    }
+
+                    function _onDeleteSuccess() {
+
+                        _getAllStreetData();
+                    }
+
+
+                    function _onDeleteError() {
+
+
+
+                    }
+
+
+                    function _submitStreetData() {
+                        vm.isAddStreetData = true;
+                  
+                        var address = (vm.addStreetData.Line1 + " "
+                              + vm.addStreetData.City + " "
+                              + vm.addStreetData.State + " "
+                              + vm.addStreetData.ZipCode);
+
+                        _geoCodeAddress(address, _onGeoCodeSuccess);
+
+                    }
+
+                    function _geoCodeAddress(address, onScb) {
+                        vm.geocoder.geocode({ 'address': address }, onScb);
+                    };
+
+                    function _onGeoCodeSuccess(results, status) {
+
+                        $scope.$apply(vm.geocodeResponse = JSON.stringify(results, null, "     "))
+
+
+
+                        if (status == google.maps.GeocoderStatus.OK) {
+
+                            var geometry = results[0].geometry;
+                            var loc = geometry.location;
+
+
+
+
+
+
+                            var lat = loc.lat();
+                            var lon = loc.lng();
+
+
+
+
+
+
+
+
+                            if (vm.isSubmitSearch) {
+                          
+                                vm.signSearch.Lat = lat;
+                                vm.signSearch.Lng = lon;
+                                vm.signSearch.Radius = 1000;
+                                _getStreetSignData(vm.signSearch);
+
+                            }
+                            if (vm.isAddStreetData)
+                  
+                            vm.addStreetData.Lat = lat;
+                            vm.addStreetData.Lng = lon;
+                            _addStreetSignData(vm.addStreetData);
+
+                        } else {
+                            console.log('error')
+                        }
+                    }
+
+                    function _getStreetSignData(signSearch) {
+
+                        console.log(signSearch);
+                        var url = "/api/addresses/SignChecker";
+
+                        var settings = {
+                            cache: false
+                            , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , data: signSearch
+                            , dataType: "json"
+                            , success: vm.onSignSuccess
+                            , error: vm.onSignError
+                            , type: "POST"
+                        };
+
+                        $.ajax(url, settings);
+
+
+                    }
+
+                    function _addStreetSignData(addStreetData) {
+
+                        console.log(addStreetData);
+                        var url = "/api/addresses";
+
+                        var settings = {
+                            cache: false
+                            , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , data: addStreetData
+                            , dataType: "json"
+                            , success: vm.onAddSuccess
+                            , error: vm.onAddError
+                            , type: "POST"
+                        };
+
+                        $.ajax(url, settings);
+                    }
+
+                    function _onAddSuccess(data) {
+                        vm.isAddStreetData = false;
+                        console.log(data);
+                    }
+
+                    function _onAddError(data) {
+
+                        console.log(data);
+                    }
+
+                    function _onSignSuccess(data) {
+                        vm.isSubmitSearch = false;
+
+                        console.log(data);
+                        $scope.$apply(vm.streetData = data.Items);
+                    }
+
+                    function _onSignError() {
+
+
+
+                    }
+
+
+
+                }]);
+
+
+
+
+                guanApp.controller('addressListingController', ['$scope', function ($scope) {
+
+
+                    var vm = this;
+
+                    vm.onDeleteSuccess = _onDeleteSuccess;
+                    vm.onDeleteError = _onDeleteError;
+
+                    vm.deleteSign = _deleteSign;
+                    vm.onGetAllSuccess = _onGetAllSuccess;
+                    vm.onGetAllError = _onGetAllError;
+
+
+
+
+                    render();
+
+                    function render() {
+                        _getAllStreetData();
+
+
+
+                    }
+
+
+
+
+
+                    function _getAllStreetData() {
+
+                        var url = "/api/addresses";
+
+                        var settings = {
+                            cache: false
+                            , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , dataType: "json"
+                            , success: vm.onGetAllSuccess
+                            , error: vm.onGetAllError
+                            , type: "GET"
+                        };
+
+                        $.ajax(url, settings);
+
+                    }
+
+
+
+
+
+                    function _onGetAllSuccess(data) {
+                        console.log(data);
+                        $scope.$apply(vm.allStreetData = data.Items);
+
+                    }
+
+                    function _onGetAllError(data) {
+
+
+                    }
+
+
+                    function _deleteSign(id) {
+                        console.log(id);
+
+                        var url = "/api/addresses/" + id;
+
+                        var settings = {
+                            contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                            , dataType: "json"
+                            , success: vm.onDeleteSuccess
+                            , error: vm.onDeleteError
+                            , type: "DELETE"
+                        };
+
+                        $.ajax(url, settings);
+
+
+                    }
+
+                    function _onDeleteSuccess() {
+
+                        _getAllStreetData();
+                    }
+
+
+                    function _onDeleteError() {
+
+
+
+                    }
+
+
+
+
+
+                }])
+
+                guanApp.controller('tabController',['$scope', function ($scope) {
+
+                    var vm = this;
+
+
+
+
+                    vm.tabs = [
+
+                      { link: '#/', label: 'Add Street Data' },
+                      { link: '#/list', label: 'All Data' }
+
+
+                    ];
+                    vm.selectedTab = vm.tabs[0];
+                    vm.tabClass = _tabClass;
+                    vm.setSelectedTab = _setSelectedTab;
+
+                    function _tabClass(tab) {
+                        if (vm.selectedTab == tab) {
+                            return "active";
+                        } else {
+                            return "";
+                        }
+                    }
+
+                    function _setSelectedTab(tab) {
+
+                        vm.selectedTab = tab;
+                    }
+
+                    render();
+
+                    function render() {
+
+
+
+                    }
+
+                }])
+
+                guanApp.filter('dayOfWeekFilter', [function () {
+                    return function (DayOfWeek) {
+                        switch (DayOfWeek) {
+                            case 1:
+                                return "Monday";
+                            case 2:
+                                return "Tuesday";
+                            case 3:
+                                return "Wednesday";
+                            case 4:
+                                return "Thursday";
+                            case 5:
+                                return "Friday";
+                            case 6:
+                                return "Saturday";
+                            case 7:
+                                return "Sunday";
+
+
+
+                        }
+
+                    }
+
+
+                }])
+
+            </script>
+
+        }

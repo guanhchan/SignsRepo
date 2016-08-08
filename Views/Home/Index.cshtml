@@ -1,31 +1,147 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿<div class="container" @*ng-app="guanApp"*@>
+    <div>
+        <div class="scrollable-content scrollable-nice scrollable-medium panel col-md-12">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Street</th>
+                        <th>City/State/ZipCode</th>
+                        <th>Street Data</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+                <tbody ng-repeat="signs in addressListingCtrl.allStreetData" class="border-red">
+                    <tr ng-class-odd="'odd'">
+                        <td ng-class-odd="'odd'">{{signs.Line1}}</td>
+                        <td ng-class-odd="'odd'">{{signs.City}}, {{signs.State}} {{signs.zipCode}}</td>
+                        <td ng-class-odd="'odd'">{{signs.StreetHourStart}} - {{signs.StreetHourEnd}} - {{signs.DayOfWeek | dayOfWeekFilter}} - {{signs.TimeLimit}} Parking</td>
+                        <td ng-class-odd="'odd'"><a ng-href="/{{signs.Id}}/edit"><button class="btn">Edit Sign Data</button> </a></td>
+                        <td ng-class-odd="'odd'"><button class="btn" ng-click="addressListingCtrl.deleteSign(signs.Id)">Delete Sign Data</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+            @*<div class="" ng-repeat="info in addressListingCtrl.allStreetData">
+                {{info.Line1}} - {{info.City}} - {{info.State}} - {{info.ZipCode}}
+                {{info.StreetHourStart}} - {{info.StreetHourEnd}} - {{info.DayOfWeek | dayOfWeekFilter}}
+               
+            </div>*@
+        </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+
+
+@section scripts{
+
+    @*<script src="~/Scripts/angular.js"></script>
+    <script src="~/Scripts/angular-route.js"></script>
+    <script src="~/Scripts/angular-animate.js"></script>*@
+ 
+
+
+
+    <script type="text/javascript">
+
+        var guanApp = angular.module('guanApp', [])
+
+
+        guanApp.controller('addressController', ['$scope', function ($scope) {
+
+
+            var vm = this;
+
+
+
+            vm.onGetAllSuccess = _onGetAllSuccess;
+            vm.onGetAllError = _onGetAllError;
+
+
+
+
+            render();
+
+            function render() {
+                _getAllStreetData();
+
+
+
+            }
+
+
+
+
+
+            function _getAllStreetData() {
+
+                var url = "/api/addresses";
+
+                var settings = {
+                    cache: false
+                    , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                    , dataType: "json"
+                    , success: vm.onGetAllSuccess
+                    , error: vm.onGetAllError
+                    , type: "GET"
+                };
+
+                $.ajax(url, settings);
+
+            }
+
+
+
+
+
+            function _onGetAllSuccess(data) {
+                console.log(data);
+                $scope.$apply(vm.allStreetData = data.Items);
+
+            }
+
+            function _onGetAllError(data) {
+
+
+            }
+
+
+
+
+
+
+        }])
+
+
+
+        guanApp.filter('dayOfWeekFilter', [function () {
+            return function (DayOfWeek) {
+                switch (DayOfWeek) {
+                    case 1:
+                        return "Monday";
+                    case 2:
+                        return "Tuesday";
+                    case 3:
+                        return "Wednesday";
+                    case 4:
+                        return "Thursday";
+                    case 5:
+                        return "Friday";
+                    case 6:
+                        return "Saturday";
+                    case 7:
+                        return "Sunday";
+
+
+
+                }
+
+            }
+
+
+        }])
+
+
+    </script>
+    }

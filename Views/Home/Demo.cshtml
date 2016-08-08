@@ -1,0 +1,667 @@
+﻿
+@{
+    ViewBag.Title = "Demo";
+    Layout = "~/Views/Shared/_LayoutGuan.cshtml";
+
+}
+@section Styles{
+    <style>
+        #map-canvas {
+            width: 100% !important;
+            height: 400px !important;
+            background-color: white;
+        }
+
+        .odd {
+            background-color: white !important;
+        }
+
+        .scrollable-content {
+            text-transform: uppercase;
+        }
+    </style>
+
+}
+
+
+<div ng-app="guanApp">
+    <div ng-controller="addressController as addressCtrl">
+
+        <!-- About -->
+        <section id="about" class="about">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="text-center">Please enter your current location</h2>
+                        <form class="form col-md-4 contact-form" id="addressForm" name="addressCtrl.addressForm" role="form" novalidate>
+                            <fieldset>
+                                <div class="form-group rentMgnBtmSm">
+
+                                    <label for="StreetAddress" style="color:black"><h5>Enter Street Address</h5></label>
+                                    <span style="color:red" ng-show="addressCtrl.addressForm.Line1.$dirty && addressCtrl.addressForm.Line1.$invalid">
+                                        <span ng-show="addressCtrl.addressForm.Line1.$error.required">Address is required.</span>
+                                    </span>
+                                    <div class="col-md-12 input-group-sm">
+                                        <input id="Line1" name="Line1" type="text" ng-model="addressCtrl.signSearch.Line1" class="form-control" placeholder="Please enter a valid Street Address" required>
+                                    </div>
+                                </div>
+                                <div class="form-group rentMgnBtmSm">
+
+                                    <label for="City" style="color:black"><h5>Enter City</h5></label>
+                                    <span style="color:red" ng-show="addressCtrl.addressForm.City.$dirty && addressCtrl.addressForm.City.$invalid">
+                                        <span ng-show="addressCtrl.addressForm.City.$error.required">City is required.</span>
+                                    </span>
+                                    <div class="col-md-12 input-group-sm">
+                                        <input id="City" name="City" type="text" ng-model="addressCtrl.signSearch.City" class="form-control" placeholder="Please enter a valid City" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group rentMgnBtmSm">
+
+                                    <label for="state" style="color:black"><h5>Choose State</h5></label>
+                                    <span style="color:red" ng-show="addressCtrl.addressForm.State.$dirty && addressCtrl.addressForm.State.$invalid">
+                                        <span ng-show="addressCtrl.addressForm.State.$error.required">State is required.</span>
+                                    </span>
+                                    <div class="col-md-12 input-group-sm">
+                                        <select class="form-control"
+                                                placeholder="state"
+                                                id="state"
+                                                name="state"
+                                                ng-model="addressCtrl.signSearch.State"
+                                                required>
+                                            <option value="CA">California</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group rentMgnBtmSm">
+
+                                    <label for="Zipcode" style="color:black"><h5>Enter ZipCode</h5></label>
+                                    <span style="color:red" ng-show="addressCtrl.addressForm.ZipCode.$dirty && addressCtrl.addressForm.ZipCode.$invalid">
+                                        <span ng-show="addressCtrl.addressForm.ZipCode.$error.required">Zip Code is required.</span>
+                                    </span>
+                                    <div class="col-md-12 input-group-sm">
+                                        <input id="ZipCode" name="ZipCode" type="text" ng-model="addressCtrl.signSearch.ZipCode" placeholder="Please enter a valid Zip Code" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <br />
+                                <p>
+                                    <div class="col-md-12 rentMgnBtmSm">
+                                        <button class="btn btn-primary col-sm-offset-5" style="width: 120px" data-ng-click="addressCtrl.submitSearch()" ng-disabled="addressCtrl.addressForm.$invalid" type="submit">Submit</button>
+                                    </div>
+                                </p>
+                            </fieldset>
+                        </form>
+                        <div class="scrollable-content scrollable-nice scrollable-medium panel col-md-6" ng-show="addressCtrl.isMapThere">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Street</th>
+                                        <th>City/State/ZipCode</th>
+                                        <th>Street Data</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody ng-repeat="signs in addressCtrl.streetData" class="border-red">
+                                    <tr ng-class-odd="'odd'">
+                                        <td ng-class-odd="'odd'">{{signs.Line1}}</td>
+                                        <td ng-class-odd="'odd'">{{signs.City}}, {{signs.State}} {{signs.zipCode}}</td>
+                                        <td ng-class-odd="'odd'">{{signs.StreetHourStart}} - {{signs.StreetHourEnd}} - Street Sweeping on {{signs.DayOfWeek | dayOfWeekFilter}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+
+                    </div>
+                </div>
+     
+            </div>
+
+ 
+        </section>
+       
+        <section id="services" class="services bg-primary">
+            <div class="container text-center">
+
+
+                <div ng-show="addressCtrl.isMapThere">
+                    <h2>Map Veiw</h2>
+                    <div class="container" id="mapCtrl">
+                        <div id="map-canvas" class="map-canvas col-sm-4"></div>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <h2>Do you want to contribute?</h2>
+                        <a href="http://localhost:62222/Home/add"><button class="btn btn-light">Click here</button></a>
+                        
+                        <hr class="small">
+                      
+                        
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+        <section ng-show="addressCtrl.isTab">
+            <div class="container">
+
+                <div class="col-lg-12 text-center">
+                    <h2>Please enter add a new address with sign data.</h2>
+                  
+                </div>
+        
+                <div class="row">
+                  
+                </div>
+ 
+            </div>
+
+        </section>
+
+    </div>
+
+
+</div>
+
+
+
+
+
+@section scripts{
+
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/Scripts/angular-route.js"></script>
+    <script src="~/Scripts/angular-animate.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAoOYqWsJH0YY8AkR6mD6Ce0Kjp0FBRXxg"></script>
+
+
+
+
+    <script type="text/javascript">
+
+        var guanApp = angular.module('guanApp', ['ngRoute'])
+
+
+
+ 
+
+
+        guanApp.controller('addressListingController', ['$scope', function ($scope) {
+
+
+            var vm = this;
+
+
+
+            vm.onGetAllSuccess = _onGetAllSuccess;
+            vm.onGetAllError = _onGetAllError;
+
+
+
+
+            render();
+
+            function render() {
+                _getAllStreetData();
+
+
+
+            }
+
+
+
+
+
+            function _getAllStreetData() {
+
+                var url = "/api/addresses";
+
+                var settings = {
+                    cache: false
+                    , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                    , dataType: "json"
+                    , success: vm.onGetAllSuccess
+                    , error: vm.onGetAllError
+                    , type: "GET"
+                };
+
+                $.ajax(url, settings);
+
+            }
+
+
+
+
+
+            function _onGetAllSuccess(data) {
+                console.log(data);
+                $scope.$apply(vm.allStreetData = data.Items);
+
+            }
+
+            function _onGetAllError(data) {
+
+
+            }
+
+
+
+
+
+
+        }])
+
+
+
+   
+
+
+
+        
+
+
+        guanApp.controller('addressController', ['$scope', function ($scope) {
+
+            var vm = this;
+
+            vm.geocoder = null;
+            vm.geocodeResponse = null;
+            vm.isSubmitSearch = false;
+            vm.isAddStreetData = false;
+            vm.isMapThere = false;
+            vm.headingInfo = "Angular is still working";
+            vm.streetData = {};
+            vm.signSearch = {};
+            vm.addStreetData = {};
+            vm.allStreetData = {};
+            vm.customMapSettings = {};
+            vm.submitSearch = _submitSearch;
+            vm.submitStreetData = _submitStreetData;
+            vm.deleteSign = _deleteSign;
+            vm.onAddSuccess = _onAddSuccess;
+            vm.onAddError = _onAddError;
+
+            vm.onSignSuccess = _onSignSuccess;
+            vm.onSignError = _onSignError;
+
+            vm.onGetAllSuccess = _onGetAllSuccess;
+            vm.onGetAllError = _onGetAllError;
+
+            vm.onDeleteSuccess = _onDeleteSuccess;
+            vm.onDeleteError = _onDeleteError;
+            vm.toggle = _toggle;
+            vm.isTab = false;
+
+            vm.tabs = [
+
+                { link: '#/', label: 'Add Street Data' },
+                { link: '#/h', label: 'All Data' },
+                
+            ];
+
+
+            render();
+
+            function render() {
+       
+
+
+                vm.geocoder = new google.maps.Geocoder();
+
+
+            }
+
+
+            function _toggle() {
+                
+                if (vm.isTab) {
+                    vm.isTab = false;
+                } else {
+
+                    vm.isTab = true;
+                }
+
+
+            }
+            function _submitSearch() {
+                vm.isSubmitSearch = true;
+                console.log('touched');
+                console.log(vm.signSearch)
+                var address = (vm.signSearch.Line1 + " "
+                        + vm.signSearch.City + " "
+                        + vm.signSearch.State + " "
+                        + vm.signSearch.ZipCode);
+
+                _geoCodeAddress(address, _onGeoCodeSuccess);
+
+            }
+
+
+
+    
+
+            function _onGetAllSuccess(data) {
+                console.log(data);
+                $scope.$apply(vm.allStreetData = data.Items);
+
+            }
+
+            function _onGetAllError() {
+
+
+            }
+
+            function _deleteSign(id) {
+                console.log(id);
+
+                var url = "/api/addresses/" + id;
+
+                var settings = {
+                    contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                    , dataType: "json"
+                    , success: vm.onDeleteSuccess
+                    , error: vm.onDeleteError
+                    , type: "DELETE"
+                };
+
+                $.ajax(url, settings);
+
+
+            }
+
+            function _onDeleteSuccess() {
+
+                _getAllStreetData();
+            }
+
+
+            function _onDeleteError() {
+
+
+
+            }
+
+
+            function _submitStreetData() {
+                vm.isAddStreetData = true;
+                console.log(vm.addStreetData);
+                var address = (vm.addStreetData.Line1 + " "
+                      + vm.addStreetData.City + " "
+                      + vm.addStreetData.State + " "
+                      + vm.addStreetData.ZipCode);
+
+                _geoCodeAddress(address, _onGeoCodeSuccess);
+
+            }
+
+            function _geoCodeAddress(address, onScb) {
+                vm.geocoder.geocode({ 'address': address }, onScb);
+            };
+
+            function _onGeoCodeSuccess(results, status) {
+
+                $scope.$apply(vm.geocodeResponse = JSON.stringify(results, null, "     "))
+
+
+
+                if (status == google.maps.GeocoderStatus.OK) {
+
+                    var geometry = results[0].geometry;
+                    var loc = geometry.location;
+
+
+
+
+
+
+                    var lat = loc.lat();
+                    var lon = loc.lng();
+
+                    vm.latLng = new google.maps.LatLng(lat, lon);
+
+
+
+
+
+                    if (vm.isSubmitSearch) {
+                        console.log(vm.signSearch);
+                        vm.signSearch.Lat = lat;
+                        vm.signSearch.Lng = lon;
+
+                        vm.signSearch.Radius = 1000;
+                        _getStreetSignData(vm.signSearch);
+
+                    }
+                    if (vm.isAddStreetData) {
+                        console.log(vm.addStreetData)
+                        vm.addStreetData.Lat = lat;
+                        vm.addStreetData.Lng = lon;
+
+                        _addStreetSignData(addStreetData);
+
+                    }
+
+
+                } else {
+                    console.log('error')
+                }
+            }
+
+            function _getStreetSignData(signSearch) {
+
+                console.log(signSearch);
+                var url = "/api/addresses/SignChecker";
+
+                var settings = {
+                    cache: false
+                    , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                    , data: signSearch
+                    , dataType: "json"
+                    , success: vm.onSignSuccess
+                    , error: vm.onSignError
+                    , type: "POST"
+                };
+
+                $.ajax(url, settings);
+
+
+            }
+
+            function _addStreetSignData(addStreetData) {
+
+                console.log(addStreetData);
+                var url = "/api/addresses";
+
+                var settings = {
+                    cache: false
+                    , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                    , data: addStreetData
+                    , dataType: "json"
+                    , success: vm.onAddSuccess
+                    , error: vm.onAddError
+                    , type: "POST"
+                };
+
+                $.ajax(url, settings);
+            }
+
+            function _onAddSuccess(data) {
+                vm.isAddStreetData = false;
+                console.log(data);
+            }
+
+            function _onAddError(data) {
+
+                console.log(data);
+            }
+
+            function _onSignSuccess(data) {
+                vm.isSubmitSearch = false;
+                vm.isMapThere = true;
+                _mapLoad(vm.latLng)
+
+                console.log(data);
+                $scope.$apply(vm.streetData = data.Items);
+
+
+                _dfunction(vm.streetData);
+
+            }
+
+            function _onSignError() {
+
+
+
+            }
+
+
+
+            function _mapLoad(latLng) {
+
+
+                if (vm.map == null) {
+                    var mapProp = {
+                        center: latLng,
+                        zoom: 16
+                    };
+                    vm.map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
+                }
+
+            }
+
+
+            function _dfunction(someArr) {
+                for (var i = 0; i < someArr.length; i++) {
+                    var latLngObj = {};
+                    latLngObj.lat = someArr[i].Latitude;
+                    latLngObj.lng = someArr[i].Longitude;
+                    var content = null;
+                    content = someArr[i].Line1 + " Street Sweeping on " + _dayOfWeekConvert(someArr[i].DayOfWeek) + " from " + someArr[i].StreetHourStart +
+                  " to " + someArr[i].StreetHourEnd;
+
+                    var marker = new google.maps.Marker({
+                        position: latLngObj,
+                        map: vm.map,
+                        title: content
+
+                    })
+                   
+               
+                }
+
+
+            }
+
+            function _dayOfWeekConvert(dayOfWeek) {
+                if (1) {
+                    return "Monday"
+                }
+                if (2) {
+                    return "Tuesday"
+                }
+                if (3) {
+                    return "Wednesday"
+                }
+                if (4) {
+                    return "Thursday"
+                }
+                if (5) {
+                    return "Friday"
+                }
+                if (6) {
+                    return "Saturday"
+                }
+                if (7) {
+                    return "Sunday"
+                }
+            }
+
+
+
+
+            function designMarker(singleItem) {
+
+                var customIcon;
+                var customAnimation;
+
+                if (singleItem.listings == null) {
+                    customIcon = '/images/modern-marker-red.png';
+                }
+
+                else if (singleItem.listings[0]) {
+                    customIcon = '/images/modern-marker-green.png';
+                }
+
+                vm.customMapSettings = { icon: customIcon };
+
+                return vm.customMapSettings;
+            }
+
+            function _contentProvider(singleItem) {
+                if (!singleItem) {
+                    vm.$log.error("singleItem does not exist");
+                    return null;
+                }
+
+                var content = null;
+
+                if (!singleItem.listings) {
+                    content = singleItem.line1;
+                }
+
+                else if (!singleItem.listings[0]) {
+                    content = singleItem.line1;
+                }
+
+                else if (singleItem) {
+                    content = "From" + singleItem.StreetHourStart +
+                   "To" + singleItem.StreetHourEnd;
+                }
+
+                vm.content = content;
+            }
+
+        }]);
+
+        guanApp.filter('dayOfWeekFilter', [function () {
+            return function (DayOfWeek) {
+                switch (DayOfWeek) {
+                    case 1:
+                        return "Monday";
+                    case 2:
+                        return "Tuesday";
+                    case 3:
+                        return "Wednesday";
+                    case 4:
+                        return "Thursday";
+                    case 5:
+                        return "Friday";
+                    case 6:
+                        return "Saturday";
+                    case 7:
+                        return "Sunday";
+
+
+
+                }
+
+            }
+
+
+        }])
+
+
+
+
+    </script>
+}
+

@@ -8,9 +8,9 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using GuansProject.Models;
+using Guan.Web.Models;
 
-namespace GuansProject.Controllers
+namespace Guan.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace GuansProject.Models
+namespace Guan.Web.Models
 {
     public class ExternalLoginConfirmationViewModel
     {
